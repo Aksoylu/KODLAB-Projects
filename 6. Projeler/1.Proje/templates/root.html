@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+ 
+<head>
+    <title>Haber Doğrulama Sistemi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous"> 
+    <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/root.css') }}">
+</head>
+ 
+<body>
+    <div class="container">
+        <div class="header">
+            <h3 class="text-muted">Yapay Zeka İle Haberin Doğruluğunu Teyit Edin.</hS3>
+        </div>
+        <div class="jumbotron">
+            <h1>Kodlab</h1>
+            <p class="lead">Kitap kapsamında 6.Bölümün 2.Projesi olarak gerçekleştirilen bu projede<br>
+                            kısa süreli bellek yapay sinir ağları (LSTM Neural Networks) ile sahte ve doğru haberi birbirinden ayırt etmesi amaçlanan bir Proje geliştirilmiştir.<br>
+
+                            Proje iki farklı fonksiyona sahiptir. <br>
+                            Soldaki kutucuğa haber metini girilebilir veya sağdaki kutucuğa bir haberin linki(url) girilebilir.Haber metninin gerçek mi sahte mi olduğu
+                            önceden eğitilmiş LSTM ağı ile tahmin edilir ve sonuç kullanıcıya gösterilir.
+            </p> 
+        </div>
+ 
+        <div class="row marketing">
+
+            <div class="col-lg-6">
+                <h4>Teyit edilecek haber metnini girin </h4>
+                <textarea class="area" id="input_text"></textarea>
+            </div>
+            
+            <div class="col-lg-2">
+                <center><h3><b>veya</b> </h3> </center>
+            </div>
+
+            <div class="col-lg-4">
+                <h4>Teyit edilecek haber linkini girin</h4>
+                <input type="text" id="input_link">
+            </div>
+         
+        </div>
+
+
+        <div class="row btn">
+            <div class="col-sm">
+                <a class="btn btn-lg btn-success" href="#" onclick="analizEt()" role="button">Analiz Et</a>
+              </div>
+              <div id="sonuc"> </div>
+        </div>
+
+     
+        <footer class="footer">
+            <p>&copy; <b>Ümit Aksoylu, "Projelerle Yapay Zeka ve Bilgisayarlı Görü" </b></p>
+        </footer>
+        
+    </div>
+</body>
+ 
+</html>
+
+
+<script>
+
+    function analizEt()
+    {
+        event.preventDefault();
+
+        let _haberMetin = $('#input_text').val();
+        let _haberLink = $('#input_link').val();
+        let _tip = "";
+        let _veri = "";
+
+        if(_haberLink.trim() != "")
+        {
+            _tip = "link";
+            _veri = _haberLink;
+        }
+        else
+        {
+            _tip = "metin";
+            _veri = _haberMetin;
+        }
+
+        if (_haberLink.trim() == "" && _haberMetin.trim() == "")
+        {
+            $('#sonuc').html("<font color='red'>Lütfen bir haber linki veya metini girin.</font>");
+            return;
+        }
+            
+        $('#sonuc').html("<font color='orange'>Analiz ediliyor... Lütfen bekleyin</font>");
+        $.ajax( {
+                    url: '/analiz',
+                    type: 'POST',
+                    data: {
+                        tip: _tip,
+                        veri: _veri
+                    },
+                    success: function ( donen_veri ) {
+                            $('#sonuc').html(donen_veri)
+                    },
+                    error: function ( donen_veri ) {
+                            $('#sonuc').html(donen_veri)
+                    }
+            } );
+    }
+
+</script>
